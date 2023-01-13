@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 config();
 
-// Type definition for the serverConfig object. The index signature [key: string]: { port: number }; allows any string key to be used to access a property that has a port property of number.
+// Type definition for the serverConfig object. The index signature [key: string]; allows any string key to be used to access a property that has a port property of number.
 
 // Interface defined locally to this file because it is not used anywhere else.
 interface IServerConfig {
