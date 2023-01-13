@@ -15,6 +15,7 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(express.json());
 
+// Connect to Database
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connected to Database'));
 
