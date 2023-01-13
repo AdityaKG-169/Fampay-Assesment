@@ -22,6 +22,7 @@ db.once('open', () => console.log('Connected to Database'));
 // Health Check Route
 app.get('/', (_req, res) => {
 	const responseObject: TServerResponse = {
+		type: 'success',
 		status: 200,
 		message: 'Server is running',
 		data: null,
@@ -33,6 +34,7 @@ app.get('/', (_req, res) => {
 // 404 Route
 app.get('*', (_req, res) => {
 	const responseObject: TServerResponse = {
+		type: 'error',
 		status: 404,
 		message: 'Route not found',
 		data: null,
@@ -45,6 +47,7 @@ app.get('*', (_req, res) => {
 // Handle errors
 app.use((err: Error, _req: Request, res: Response) => {
 	const responseObject: TServerResponse = {
+		type: 'error',
 		status: 500,
 		message: err.message,
 		data: null,
