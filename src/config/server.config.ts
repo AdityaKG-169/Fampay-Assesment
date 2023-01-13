@@ -6,17 +6,19 @@ config();
 
 // Interface defined locally to this file because it is not used anywhere else.
 interface IServerConfig {
-	development: { port: number };
-	production: { port: number };
-	[key: string]: { port: number };
+	development: { port: number; mongoUri: string };
+	production: { port: number; mongoUri: string };
+	[key: string]: { port: number; mongoUri: string };
 }
 
 const serverConfig: IServerConfig = {
 	development: {
 		port: 8080,
+		mongoUri: 'mongodb://localhost:27017/fampay_assessment',
 	},
 	production: {
 		port: 8081,
+		mongoUri: process.env.MONGO_URI || '',
 	},
 };
 

@@ -5,6 +5,7 @@ import helmet from 'helmet';
 
 import TServerResponse from './types/serverResponse.types';
 import serverConfig from './config/server.config';
+import db from './config/mongoose.config';
 
 const app = express();
 
@@ -13,6 +14,9 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(express.json());
+
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to Database'));
 
 // Health Check Route
 app.get('/', (_req, res) => {
