@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 
+import TVideo from '../../types/video.types';
+
 const videoSchema = new Schema(
 	{
 		title: {
@@ -27,4 +29,4 @@ const videoSchema = new Schema(
 	}
 );
 
-export default model('Video', videoSchema);
+export default model<TVideo>('Video', videoSchema);
