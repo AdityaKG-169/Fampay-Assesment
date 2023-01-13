@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
 import TServerResponse from './types/serverResponse.types';
-import serverConfig from './config/serverConfig';
+import serverConfig from './config/server.config';
 
 const app = express();
 
@@ -35,6 +35,18 @@ app.get('*', (_req, res) => {
 	};
 
 	res.status(404).json(responseObject);
+});
+
+// Handle errors
+app.use((err: Error, _req: Request, res: Response) => {
+	const responseObject: TServerResponse = {
+		status: 500,
+		message: err.message,
+		data: null,
+		uniqueCode: 'SERVER_ERROR',
+	};
+
+	res.status(500).json(responseObject);
 });
 
 const PORT = serverConfig.port;
