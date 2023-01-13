@@ -81,4 +81,53 @@ const getPaginatedVideos = async (page: number) => {
 	}
 };
 
-export { saveMultipleVideos, getPaginatedVideos };
+// Function to return the video whose title or description matches the search query.
+// Page number starts from 1.
+const searchVideos = async (query: string, page: number) => {
+	try {
+		const limit = 10;
+
+		const videos = await Video.find({
+			$or: [
+				{ title: { $regex: query, $options: 'i' } }, // i for case insensitive
+				{ description: { $regex: query, $options: 'i' } },
+			],
+		})
+			.sort({ publishedAt: -1 })
+			.skip((page - 1) * limit)
+			.limit(limit)
+			.exec();
+
+		if (videos && videos.length > 0) {
+			const responseObject: TServerResponse = {
+				type: 'success',
+				status: 200,
+				message: 'Videos fetched successfully',
+				data: videos,
+				uniqueCode: 'VIDEOS_FETCHED',
+			};
+			return responseObject;
+		}
+
+		const responseObject: TServerResponse = {
+			type: 'error',
+			status: 404,
+			message: 'Videos not found',
+			data: null,
+			uniqueCode: 'VIDEOS_NOT_FOUND',
+		};
+
+		return responseObject;
+	} catch (error) {
+		const responseObject: TServerResponse = {
+			type: 'error',
+			status: 500,
+			message: 'Internal server error (searchVideos)',
+			data: null,
+			uniqueCode: 'INTERNAL_SERVER_ERROR',
+		};
+		return responseObject;
+	}
+};
+
+export { saveMultipleVideos, getPaginatedVideos, searchVideos };
