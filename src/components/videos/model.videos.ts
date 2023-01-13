@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-const videoSchema = new mongoose.Schema(
+const videoSchema = new Schema(
 	{
 		title: {
 			type: String,
@@ -27,4 +27,4 @@ const videoSchema = new mongoose.Schema(
 	}
 );
 
-export default mongoose.model('Video', videoSchema);
+export default model('Video', videoSchema);
