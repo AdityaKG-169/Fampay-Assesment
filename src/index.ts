@@ -15,6 +15,19 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(express.json());
 
+// Handle errors from middlewares
+app.use((err: Error, _req: Request, res: Response) => {
+	const responseObject: TServerResponse = {
+		type: 'error',
+		status: 500,
+		message: err.message,
+		data: null,
+		uniqueCode: 'SERVER_ERROR',
+	};
+
+	res.status(500).json(responseObject);
+});
+
 // Connect to Database
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connected to Database'));
@@ -42,19 +55,6 @@ app.get('*', (_req, res) => {
 	};
 
 	res.status(404).json(responseObject);
-});
-
-// Handle errors
-app.use((err: Error, _req: Request, res: Response) => {
-	const responseObject: TServerResponse = {
-		type: 'error',
-		status: 500,
-		message: err.message,
-		data: null,
-		uniqueCode: 'SERVER_ERROR',
-	};
-
-	res.status(500).json(responseObject);
 });
 
 const PORT = serverConfig.port;
