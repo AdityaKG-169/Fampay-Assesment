@@ -11,7 +11,7 @@ const apiKeys = apiKeysUnparsed.split(',');
 const youtubeConfig = {
 	apiKeys,
 	maxResultsPerRequest: 5, // The maximum number of results that can be returned in a single request.
-	searchQuery: 'music', // The search query to use when searching for videos.
+	searchQuery: 'video', // The search query to use when searching for videos.
 	initialPublishedAfter: '2023-01-01T00:00:00Z', // The date after which videos should be published. To avoid very old videos from the cache.
 };
 
