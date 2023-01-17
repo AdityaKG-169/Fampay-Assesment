@@ -29,7 +29,7 @@ app.use((err: Error, _req: Request, res: Response) => {
 });
 
 // Connect to Database
-db.on('error', (error) => console.error(error));
+db.on('error', (error: Error) => console.error(error));
 db.once('open', () => console.log('Connected to Database'));
 
 // Health Check Route
