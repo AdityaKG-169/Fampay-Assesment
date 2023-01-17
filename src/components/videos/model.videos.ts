@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
-
-import TVideo from '../../types/video.types';
+import mongooseFuzzySearching from 'mongoose-fuzzy-searching';
 
 const videoSchema = new Schema(
 	{
@@ -29,4 +28,8 @@ const videoSchema = new Schema(
 	}
 );
 
-export default model<TVideo>('Video', videoSchema);
+videoSchema.plugin(mongooseFuzzySearching, {
+	fields: ['title', 'description'],
+});
+
+export default model('Video', videoSchema);
