@@ -87,12 +87,7 @@ const searchVideos = async (query: string, page: number) => {
 	try {
 		const limit = 10;
 
-		const videos = await Video.find({
-			$or: [
-				{ title: { $regex: query, $options: 'i' } }, // i for case insensitive
-				{ description: { $regex: query, $options: 'i' } },
-			],
-		})
+		const videos = await Video.fuzzySearch(query)
 			.sort({ publishedAt: -1 })
 			.skip((page - 1) * limit)
 			.limit(limit)
