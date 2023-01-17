@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import TServerResponse from './types/serverResponse.types';
 import serverConfig from './config/server.config';
 import db from './config/mongoose.config';
+import callYouTube from './helpers/callYouTube.helpers';
 
 const app = express();
 
@@ -56,6 +57,9 @@ app.get('*', (_req, res) => {
 
 	res.status(404).json(responseObject);
 });
+
+// call youtube api and save videos to database
+callYouTube();
 
 const PORT = serverConfig.port;
 app.listen(PORT, () => {
