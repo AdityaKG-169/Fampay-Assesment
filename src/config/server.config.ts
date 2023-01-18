@@ -13,11 +13,11 @@ interface IServerConfig {
 
 const serverConfig: IServerConfig = {
 	development: {
-		port: 8080,
+		port: Number(process.env.PORT) || 8080,
 		mongoUri: 'mongodb://localhost:27017/fampay_assessment',
 	},
 	production: {
-		port: 8081,
+		port: Number(process.env.PORT) || 8080,
 		mongoUri: process.env.MONGO_URI || '',
 	},
 };
