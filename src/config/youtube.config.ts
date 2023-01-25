@@ -1,12 +1,13 @@
-// The .env file contains YOUTUBE_API_KEYS=API_KEY_1,API_KEY_2,API_KEY_3. The API keys are separated by commas.
+// The .env file contains YOUTUBE_API_KEYS=API_KEY_1, API_KEY_2, API_KEY_3. The API keys are separated by commas and spaces.
 const apiKeysUnparsed = process.env.YOUTUBE_API_KEYS;
 
 if (!apiKeysUnparsed) {
 	throw new Error('No YouTube API keys found');
 }
 
-// Split the unparsed API keys into an array of strings (API keys) using the comma as the separator character (',').
-const apiKeys = apiKeysUnparsed.split(',');
+// Split the unparsed API keys into an array of strings (API keys) using the comma as the separator character (', ').
+// Sample output: ['API_KEY_1', 'API_KEY_2', 'API_KEY_3'] (without the quotes '').
+const apiKeys = apiKeysUnparsed.split(', ');
 
 const youtubeConfig = {
 	apiKeys,
