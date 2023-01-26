@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import cron from 'node-cron';
+import { exit } from 'process';
 
 import youtubeConfig from '../config/youtube.config';
 import TServerResponse from '../types/serverResponse.types';
@@ -78,14 +79,23 @@ const callYouTube = async () => {
 			return responseObj;
 		} catch (err) {
 			if (err instanceof Error) {
+				console.log(
+					'Quota exceeded / Invalid Key, trying again with a different api key'
+				);
+
 				// remove the first api key from the array and try again
 				API_KEYS.shift();
-				console.log('Quota exceeded, trying again with a different api key');
+
+				if (API_KEYS.length === 0) {
+					console.log('No more api keys to try');
+					exit(1);
+				}
 
 				const responseObj: TServerResponse = {
 					type: 'error',
 					status: 429,
-					message: 'Quota exceeded, trying again with a different api key',
+					message:
+						'Quota exceeded / Invalid Key, trying again with a different api key',
 					data: null,
 					uniqueCode: 'QUOTA_EXCEEDED',
 				};
