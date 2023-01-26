@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import TServerResponse from './types/serverResponse.types';
 import serverConfig from './config/server.config';
 import db from './config/mongoose.config';
-import callYouTube from './helpers/callYouTube.helpers';
+import callYouTube from './jobs/callYouTube.jobs';
 
 const app = express();
 

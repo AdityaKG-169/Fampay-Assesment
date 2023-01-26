@@ -26,6 +26,7 @@ const saveMultipleVideos = async (videos: TVideo[]) => {
 		};
 		return responseObject;
 	} catch (error) {
+		console.log(error);
 		const responseObject: TServerResponse = {
 			type: 'error',
 			status: 500,

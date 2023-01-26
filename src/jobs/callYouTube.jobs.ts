@@ -10,7 +10,7 @@ import { saveMultipleVideos } from '../components/videos/dal.videos';
 
 // To optimize, we could ask google to send GZIP compressed data to reduce the size of the response, but we would need to decompress it before saving it into the database. That makes the process a little compute intensive, but it would reduce the size of the response by 70%.
 const callYouTube = async () => {
-	const INTERVAL_TIME_IN_SECONDS = 10;
+	const INTERVAL_TIME_IN_SECONDS = youtubeConfig.apiCallIntervalInSeconds; // interval time in seconds
 
 	const API_KEYS = youtubeConfig.apiKeys; // array of google api keys
 	const INITIAL_PUBLISHED_AFTER = youtubeConfig.initialPublishedAfter; // date in ISO format (YYYY-MM-DDThh:mm:ssZ) to get videos published after this date
@@ -18,13 +18,12 @@ const callYouTube = async () => {
 	const MAX_RESULTS = youtubeConfig.maxResultsPerRequest; // number of videos we want to get from the api
 
 	// checks if the file (last_published) exists and if it does, read the file and set the variable(LAST_PUBLISHED) to the value of the file. If it doesnt, set the variable to INITIAL_PUBLISHED_AFTER
-	let LAST_PUBLISHED = fs.existsSync(
-		path.join(__dirname, '../config/last_published')
-	)
-		? fs.readFileSync(path.join(__dirname, '../config/last_published'), 'utf-8')
+	let LAST_PUBLISHED = fs.existsSync(path.join(__dirname, './last_published'))
+		? fs.readFileSync(path.join(__dirname, './last_published'), 'utf-8')
 		: INITIAL_PUBLISHED_AFTER;
 
-	cron.schedule(`0/${INTERVAL_TIME_IN_SECONDS} * * * * *`, async () => {
+	// cron schedule to run the function every 10 seconds
+	cron.schedule(`*/${INTERVAL_TIME_IN_SECONDS} * * * * *`, async () => {
 		try {
 			const googleResponse = await axios.get(
 				`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${SEARCH_QUERY}&type=video&order=date&publishedAfter=${LAST_PUBLISHED}&key=${API_KEYS[0]}&maxResults=${MAX_RESULTS}`
@@ -33,8 +32,6 @@ const callYouTube = async () => {
 			const videoItems = googleResponse.data.items;
 
 			if (!videoItems || !videoItems.length) {
-				console.log('No videos found');
-
 				const responseObj: TServerResponse = {
 					type: 'error',
 					status: 404,
@@ -46,10 +43,11 @@ const callYouTube = async () => {
 			}
 
 			const videos = videoItems.map((item: TGoogleVideoResponse) => ({
-				title: item.snippet.title,
-				description: item.snippet.description,
+				title: item.snippet.title || 'No title available',
+				description: item.snippet.description || 'No description available',
 				publishedAt: item.snippet.publishedAt,
-				thumbnail: item.snippet.thumbnails.default.url,
+				thumbnailURL:
+					item.snippet.thumbnails.default.url || 'No thumbnail available',
 			}));
 
 			// save videos to db
@@ -59,13 +57,15 @@ const callYouTube = async () => {
 				return savedVideos;
 			}
 
-			// create a file called last_published and write the publishedAt value of the first video in the array
-			fs.writeFileSync(
-				path.join(__dirname, '../config/last_published'),
-				videos[0].publishedAt.toString()
-			);
+			LAST_PUBLISHED = videos[0]
+				? videos[0].publishedAt
+				: INITIAL_PUBLISHED_AFTER;
 
-			LAST_PUBLISHED = videos[0].publishedAt;
+			// write the publishedAt date of the first video to the file (last_published)
+			fs.writeFileSync(
+				path.join(__dirname, './last_published'),
+				LAST_PUBLISHED
+			);
 
 			const responseObj: TServerResponse = {
 				type: 'success',

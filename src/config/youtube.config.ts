@@ -11,9 +11,10 @@ const apiKeys = apiKeysUnparsed.split(', ');
 
 const youtubeConfig = {
 	apiKeys,
-	maxResultsPerRequest: 5, // The maximum number of results that can be returned in a single request.
+	maxResultsPerRequest: 10, // The maximum number of results that can be returned in a single request.
 	searchQuery: 'video', // The search query to use when searching for videos.
 	initialPublishedAfter: '2023-01-01T00:00:00Z', // The date after which videos should be published. To avoid very old videos from the cache.
+	apiCallIntervalInSeconds: 60, // The interval at which the API should be called.
 };
 
 export default youtubeConfig;
