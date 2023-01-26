@@ -41,36 +41,24 @@ const saveMultipleVideos = async (videos: TVideo[]) => {
 // Returns the stored video data in a paginated response sorted in descending order of publishedAt.
 // Page number starts from 1.
 // sortBy: asc or desc
-const getPaginatedVideos = async (page: number, sortBy: string) => {
+const getPaginatedVideos = async (
+	page: number | undefined,
+	sortBy: string | undefined
+) => {
 	try {
 		const limit = 10;
 
-		if (sortBy !== 'asc' && sortBy !== 'desc') {
-			const responseObject: TServerResponse = {
-				type: 'error',
-				status: 400,
-				message: 'Invalid sort order',
-				data: null,
-				uniqueCode: 'INVALID_SORT_ORDER',
-			};
-			return responseObject;
-		}
+		let finalSortBy = 'desc';
+		if (sortBy === 'asc' || sortBy === 'desc') finalSortBy = sortBy;
 
-		if (!page || page < 1) {
-			const responseObject: TServerResponse = {
-				type: 'error',
-				status: 400,
-				message: 'Invalid page number',
-				data: null,
-				uniqueCode: 'INVALID_PAGE_NUMBER',
-			};
-			return responseObject;
-		}
+		let finalPageNumber = 1;
+		if (page && page >= 1) finalPageNumber = page;
 
 		const videos = await Video.find()
-			.sort({ publishedAt: sortBy === 'asc' ? 1 : -1 })
-			.skip((page - 1) * limit)
+			.sort({ publishedAt: finalSortBy === 'asc' ? 1 : -1 })
+			.skip((finalPageNumber - 1) * limit)
 			.limit(limit)
+			.select('-__v -_id -createdAt -updatedAt -confidenceScore')
 			.exec();
 
 		if (videos && videos.length > 0) {
@@ -108,31 +96,19 @@ const getPaginatedVideos = async (page: number, sortBy: string) => {
 // Function to return the video whose title or description matches the search query.
 // Page number starts from 1.
 // sortBy: asc or desc
-const searchVideos = async (query: string, page: number, sortBy: string) => {
+const searchVideos = async (
+	query: string | undefined,
+	page: number | undefined,
+	sortBy: string | undefined
+) => {
 	try {
 		const limit = 10;
 
-		if (sortBy !== 'asc' && sortBy !== 'desc') {
-			const responseObject: TServerResponse = {
-				type: 'error',
-				status: 400,
-				message: 'Invalid sort order',
-				data: null,
-				uniqueCode: 'INVALID_SORT_ORDER',
-			};
-			return responseObject;
-		}
+		let finalSortBy = 'desc';
+		if (sortBy === 'asc' || sortBy === 'desc') finalSortBy = sortBy;
 
-		if (!page || page < 1) {
-			const responseObject: TServerResponse = {
-				type: 'error',
-				status: 400,
-				message: 'Invalid page number',
-				data: null,
-				uniqueCode: 'INVALID_PAGE_NUMBER',
-			};
-			return responseObject;
-		}
+		let finalPageNumber = 1;
+		if (page && page >= 1) finalPageNumber = page;
 
 		if (!query || !query.trim()) {
 			const responseObject: TServerResponse = {
@@ -149,9 +125,10 @@ const searchVideos = async (query: string, page: number, sortBy: string) => {
 		const modifiedQuery = query.trim();
 
 		const videos = await Video.fuzzySearch(modifiedQuery)
-			.sort({ publishedAt: sortBy === 'asc' ? 1 : -1 })
-			.skip((page - 1) * limit)
+			.sort({ publishedAt: finalSortBy === 'asc' ? 1 : -1 })
+			.skip((finalPageNumber - 1) * limit)
 			.limit(limit)
+			.select('-__v -_id -createdAt -updatedAt -confidenceScore')
 			.exec();
 
 		if (videos && videos.length > 0) {

@@ -16,19 +16,21 @@ const getPaginatedVideosController = async (
 ) => {
 	const { page, sortBy, query } = req.query;
 
+	// if we dont have a query, we return paginated videos
 	if (!query || !query.trim()) {
 		const paginatedVideos = await getPaginatedVideos(
-			parseInt(page as string, 10),
-			sortBy as string
+			page ? parseInt(page as string, 10) : undefined,
+			sortBy
 		);
 
 		return res.status(paginatedVideos.status).json(paginatedVideos);
 	}
 
+	// if we have a query, we return search results
 	const searchResults = await searchVideos(
 		query,
-		parseInt(page as string, 10),
-		sortBy as string
+		page ? parseInt(page as string, 10) : undefined,
+		sortBy
 	);
 
 	return res.status(searchResults.status).json(searchResults);
