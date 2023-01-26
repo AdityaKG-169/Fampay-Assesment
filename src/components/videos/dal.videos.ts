@@ -56,6 +56,17 @@ const getPaginatedVideos = async (page: number, sortBy: string) => {
 			return responseObject;
 		}
 
+		if (!page || page < 1) {
+			const responseObject: TServerResponse = {
+				type: 'error',
+				status: 400,
+				message: 'Invalid page number',
+				data: null,
+				uniqueCode: 'INVALID_PAGE_NUMBER',
+			};
+			return responseObject;
+		}
+
 		const videos = await Video.find()
 			.sort({ publishedAt: sortBy === 'asc' ? 1 : -1 })
 			.skip((page - 1) * limit)
@@ -112,7 +123,32 @@ const searchVideos = async (query: string, page: number, sortBy: string) => {
 			return responseObject;
 		}
 
-		const videos = await Video.fuzzySearch(query)
+		if (!page || page < 1) {
+			const responseObject: TServerResponse = {
+				type: 'error',
+				status: 400,
+				message: 'Invalid page number',
+				data: null,
+				uniqueCode: 'INVALID_PAGE_NUMBER',
+			};
+			return responseObject;
+		}
+
+		if (!query || !query.trim()) {
+			const responseObject: TServerResponse = {
+				type: 'error',
+				status: 400,
+				message: 'Invalid search query',
+				data: null,
+
+				uniqueCode: 'INVALID_SEARCH_QUERY',
+			};
+			return responseObject;
+		}
+
+		const modifiedQuery = query.trim();
+
+		const videos = await Video.fuzzySearch(modifiedQuery)
 			.sort({ publishedAt: sortBy === 'asc' ? 1 : -1 })
 			.skip((page - 1) * limit)
 			.limit(limit)
