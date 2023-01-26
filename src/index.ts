@@ -8,6 +8,8 @@ import serverConfig from './config/server.config';
 import db from './config/mongoose.config';
 import callYouTube from './jobs/callYouTube.jobs';
 
+import videosRoutes from './components/videos/routes.videos';
+
 const app = express();
 
 // Middlewares
@@ -16,25 +18,12 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(express.json());
 
-// Handle errors from middlewares
-app.use((err: Error, _req: Request, res: Response) => {
-	const responseObject: TServerResponse = {
-		type: 'error',
-		status: 500,
-		message: err.message,
-		data: null,
-		uniqueCode: 'SERVER_ERROR',
-	};
-
-	res.status(500).json(responseObject);
-});
-
 // Connect to Database
 db.on('error', (error: Error) => console.error(error));
 db.once('open', () => console.log('Connected to Database'));
 
 // Health Check Route
-app.get('/', (_req, res) => {
+app.get('/', (_req: Request, res: Response) => {
 	const responseObject: TServerResponse = {
 		type: 'success',
 		status: 200,
@@ -42,11 +31,14 @@ app.get('/', (_req, res) => {
 		data: null,
 		uniqueCode: 'SERVER_RUNNING',
 	};
-	res.status(200).json(responseObject);
+	return res.status(200).json(responseObject);
 });
 
+// Import Routes
+app.use('/api/v1/videos', videosRoutes);
+
 // 404 Route
-app.get('*', (_req, res) => {
+app.get('*', (_req: Request, res: Response) => {
 	const responseObject: TServerResponse = {
 		type: 'error',
 		status: 404,
@@ -55,7 +47,7 @@ app.get('*', (_req, res) => {
 		uniqueCode: 'ROUTE_NOT_FOUND',
 	};
 
-	res.status(404).json(responseObject);
+	return res.status(404).json(responseObject);
 });
 
 // call youtube api and save videos to database
