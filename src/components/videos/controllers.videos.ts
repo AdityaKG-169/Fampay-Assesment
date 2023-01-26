@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { searchVideos, getPaginatedVideos } from './dal.videos';
 
 interface IQueryAndRequest extends Request {
