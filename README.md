@@ -57,7 +57,7 @@ In the `.env` file, change the value of `MONGO_URI` to `mongodb://mongo_db:27017
 **Step 3:** After setting the environment variables, you can start the server by running the following command:
 
 ```bash
-> docker-compose up -d
+> sudo docker-compose up -d
 ```
 
 ## API Endpoints
